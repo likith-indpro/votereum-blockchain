@@ -2,18 +2,15 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title VotingSystem
  * @dev A secure blockchain-based voting system
  */
 contract VotingSystem is Ownable, ReentrancyGuard {
-    using Counters for Counters.Counter;
-
-    // Counter for election IDs
-    Counters.Counter private _electionIds;
+    // Counter for election IDs - replacing Counters.sol with a simple uint256
+    uint256 private _electionIdCounter;
 
     struct Candidate {
         uint256 id;
@@ -60,8 +57,9 @@ contract VotingSystem is Ownable, ReentrancyGuard {
         require(startTime >= block.timestamp, "Start time must be in the future");
         require(endTime > startTime, "End time must be after start time");
 
-        _electionIds.increment();
-        uint256 newElectionId = _electionIds.current();
+        // Increment the election ID counter
+        _electionIdCounter++;
+        uint256 newElectionId = _electionIdCounter;
 
         Election storage election = _elections[newElectionId];
         election.id = newElectionId;
@@ -216,6 +214,6 @@ contract VotingSystem is Ownable, ReentrancyGuard {
      * @dev Get total number of elections
      */
     function getElectionCount() public view returns (uint256) {
-        return _electionIds.current();
+        return _electionIdCounter;
     }
 }
